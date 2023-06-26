@@ -14,16 +14,20 @@ public class ValidateUtil {
         for(Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
             if(field.isAnnotationPresent(Email.class)) {
-                patternMatcher(field, object);
+                validateEmail(field, object);
             }
         }
     }
 
-    private static void patternMatcher(Field field, Object object) throws IllegalAccessException {
+    private static void validateEmail(Field field, Object object) throws IllegalAccessException {
         Pattern pattern = Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         String email = (String) field.get(object);
-        if(!pattern.matcher(email).matches()) {
+        if(isNotMatching(pattern, email)) {
             throw new InvalidEmailException("Email " + email + " is invalid");
         }
+    }
+
+    private static boolean isNotMatching(Pattern pattern, String value) {
+        return !pattern.matcher(value).matches();
     }
 }
